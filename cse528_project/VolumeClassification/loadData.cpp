@@ -45,8 +45,16 @@ const int volSize[numOfDataSet][3] =
 
 float density2Trans(float density)
 {
-	auto c = pow(density / 256.0f, 1.2f);
-	return (c*transparency);
+	if (curDataIdx == 6)
+	{
+		auto c = density*density*density / 65536.0f;
+		return (c*transparency);
+	}
+	else
+	{
+		auto c = pow(density / 256.0f, 1.2f);
+		return (c*transparency);
+	}
 }
 
 std::vector<float[3]> loadColorMap(int cmpIdx)
@@ -117,16 +125,35 @@ std::vector<float> loadVolume(int volIdx, int level)
 			coloredVolume.clear();
 			coloredVolume.resize(sx*sy*sz * 4);
 
-			auto densityVolumeSize = densityVolume.size();
 #pragma omp parallel for
-			for (int i = 0; i < densityVolumeSize; i++)
+			for (int x = 0; x < sx; x++)
+			{
+				for (size_t y = 0; y < sy; y++)
+				{
+					for (size_t z = 0; z < sz; z++)
+					{
+						auto zmajor = x*(sy*sz) + y*sz + z;
+						auto xmajor = z*(sx*sy) + y*sx + x;
+						auto p = densityVolume[zmajor];
+						auto i = xmajor;
+						coloredVolume[4 * i + 0] = colorMap[p][0];
+						coloredVolume[4 * i + 1] = colorMap[p][1];
+						coloredVolume[4 * i + 2] = colorMap[p][2];
+						coloredVolume[4 * i + 3] = density2Trans(p);
+					}
+				}
+			}
+
+			auto densityVolumeSize = densityVolume.size();
+//#pragma omp parallel for
+			/*for (int i = 0; i < densityVolumeSize; i++)
 			{
 				auto p = densityVolume[i];
 				coloredVolume[4 * i + 0] = colorMap[p][0];
 				coloredVolume[4 * i + 1] = colorMap[p][1];
 				coloredVolume[4 * i + 2] = colorMap[p][2];
 				coloredVolume[4 * i + 3] = density2Trans(p);
-			}
+			}*/
 		}
 		else
 		{

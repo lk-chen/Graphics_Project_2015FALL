@@ -33,18 +33,13 @@ void main() {
 
 	for (int i = 0; i < 300; i++)
 	{
-		voxel = frag_texcoord + step * numOfSteps;
-		numOfSteps++;
+		voxel = frag_texcoord + step * i;
 		vcolor = texture(tex3D, voxel);
 
 		if (accColor.a >= 1.0 || outOfBox(voxel))
 		{
 			accColor.a = 1.0f;
 			break;
-		} else if (vcolor.a <= 0.001)
-		{
-			i--;
-			continue;
 		} else
 		{
 			accColor.rgb = mix(accColor.rgb, vcolor.rgb, vcolor.a);

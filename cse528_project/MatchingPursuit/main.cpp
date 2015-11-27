@@ -30,7 +30,7 @@ int main()
 	nsz = downSize(sz, 2);
 	endTiming();
 
-	// construct V0 and residual
+	// construct residual
 	cout << "Constructing V0.\n";
 	startTiming();
 	residual.resize(sx);
@@ -69,6 +69,7 @@ int main()
 			}
 		}
 	}
+	tempRes.clear();
 	sx = nsx;
 	sy = nsy;
 	sz = nsz;
